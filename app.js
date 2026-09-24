@@ -35,8 +35,20 @@ const periodFilter = document.querySelector("#period-filter");
 const evaluationChart = document.querySelector("#evaluation-chart");
 const evaluationSubjectFilter = document.querySelector("#evaluation-subject-filter");
 const evaluationPeriodFilter = document.querySelector("#evaluation-period-filter");
+const hiraganaInputs = [taskInput, goalInput, reflectionInput, contentInput];
 
 let entries = loadEntries();
+
+function keepHiraganaOnly(value) {
+  return value.replace(/[^\u3040-\u309f\s。、！？「」『』（）・…]/g, "");
+}
+
+function sanitizeHiraganaInput(input) {
+  const sanitizedValue = keepHiraganaOnly(input.value);
+  if (input.value !== sanitizedValue) {
+    input.value = sanitizedValue;
+  }
+}
 
 function loadEntries() {
   const rawEntries = localStorage.getItem(STORAGE_KEY);
@@ -308,15 +320,15 @@ function normalizeUnderstandingValue(value) {
 function loadEntryIntoForm(entry) {
   dateInput.value = entry.date;
   subjectInput.value = entry.subject;
-  taskInput.value = entry.task || "";
-  goalInput.value = entry.goal || "";
+  taskInput.value = keepHiraganaOnly(entry.task || "");
+  goalInput.value = keepHiraganaOnly(entry.goal || "");
   learningMethodInput.value = entry.learningMethod || "";
   soloEvaluationInput.value = entry.soloEvaluation || entry.evaluation || "";
   peerLearningInput.value = entry.peerLearning || "";
   peerEvaluationInput.value = entry.peerEvaluation || entry.evaluation || "";
   understandingInput.value = normalizeUnderstandingValue(entry.understanding);
-  contentInput.value = entry.content;
-  reflectionInput.value = entry.reflection || entry.nextAction || "";
+  contentInput.value = keepHiraganaOnly(entry.content || "");
+  reflectionInput.value = keepHiraganaOnly(entry.reflection || entry.nextAction || "");
   editingLabel.textContent = `${formatDate(entry.date)}のきろくをへんしゅうちゅう`;
   updateCharCount();
   updateSaveState("へんしゅうちゅう");
@@ -326,16 +338,16 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const date = dateInput.value;
   const subject = subjectInput.value.trim();
-  const task = taskInput.value.trim();
-  const goal = goalInput.value.trim();
+  const task = keepHiraganaOnly(taskInput.value).trim();
+  const goal = keepHiraganaOnly(goalInput.value).trim();
   const learningMethod = learningMethodInput.value;
   const soloEvaluation = Number(soloEvaluationInput.value);
   const peerLearning = peerLearningInput.value;
   const peerEvaluation = Number(peerEvaluationInput.value);
   const understanding = Number(understandingInput.value);
   const evaluation = (soloEvaluation + peerEvaluation) / 2;
-  const content = contentInput.value.trim();
-  const reflection = reflectionInput.value.trim();
+  const content = keepHiraganaOnly(contentInput.value).trim();
+  const reflection = keepHiraganaOnly(reflectionInput.value).trim();
   if (!date || !subject || !task || !learningMethod || !peerLearning || !understanding
     || !soloEvaluation || !peerEvaluation) {
     updateSaveState("にゅうりょくをかくにん");
@@ -388,6 +400,20 @@ dateInput.addEventListener("change", () => {
 form.addEventListener("input", () => {
   updateCharCount();
   updateSaveState("へんしゅうちゅう");
+});
+
+hiraganaInputs.forEach((input) => {
+  let composing = false;
+  input.addEventListener("compositionstart", () => { composing = true; });
+  input.addEventListener("input", () => {
+    if (!composing) sanitizeHiraganaInput(input);
+    updateCharCount();
+  });
+  input.addEventListener("compositionend", () => {
+    composing = false;
+    sanitizeHiraganaInput(input);
+    updateCharCount();
+  });
 });
 
 clearButton.addEventListener("click", resetForm);
