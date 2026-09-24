@@ -1,6 +1,6 @@
 const STORAGE_KEY = "my-study-log.entries.v1";
 const GOOGLE_SHEETS_URL = "";
-const SUBJECTS = ["こくご", "さんすう", "しゃかい", "りか", "おんがく", "たいいく", "ずこう", "どうとく", "えいご", "そうごうてきながくしゅう"];
+const SUBJECTS = ["こくご", "さんすう", "せいかつか", "おんがく", "たいいく", "ずこう", "どうとく", "えいご", "そうごうてきながくしゅう"];
 const UNDERSTANDING_OPTIONS = [
   { value: "5", label: "よくりかいできた" },
   { value: "4", label: "だいたいいりかいできた" },
