@@ -21,12 +21,6 @@ const peerEvaluationInput = document.querySelector("#entry-peer-evaluation");
 const understandingInput = document.querySelector("#entry-understanding");
 const contentInput = document.querySelector("#entry-content");
 const reflectionInput = document.querySelector("#entry-reflection");
-const handwritingFields = [
-  { key: "task", input: taskInput, canvas: document.querySelector("#handwriting-task") },
-  { key: "goal", input: goalInput, canvas: document.querySelector("#handwriting-goal") },
-  { key: "reflection", input: reflectionInput, canvas: document.querySelector("#handwriting-reflection") },
-  { key: "content", input: contentInput, canvas: document.querySelector("#handwriting-content") },
-];
 const clearButton = document.querySelector("#clear-button");
 const entryList = document.querySelector("#entry-list");
 const emptyState = document.querySelector("#empty-state");
@@ -43,66 +37,6 @@ const evaluationSubjectFilter = document.querySelector("#evaluation-subject-filt
 const evaluationPeriodFilter = document.querySelector("#evaluation-period-filter");
 
 let entries = loadEntries();
-
-function clearCanvas(canvas) {
-  const context = canvas.getContext("2d");
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  canvas.classList.remove("is-active");
-}
-
-function getCanvasImage(canvas) {
-  return canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data.some((value) => value !== 0);
-}
-
-function setupHandwritingField({ canvas }) {
-  const context = canvas.getContext("2d");
-  context.lineCap = "round";
-  context.lineJoin = "round";
-  context.lineWidth = 5;
-  context.strokeStyle = "#203331";
-  let drawing = false;
-
-  canvas.addEventListener("pointerdown", (event) => {
-    drawing = true;
-    canvas.setPointerCapture(event.pointerId);
-    const rect = canvas.getBoundingClientRect();
-    context.beginPath();
-    context.moveTo(
-      (event.clientX - rect.left) * (canvas.width / rect.width),
-      (event.clientY - rect.top) * (canvas.height / rect.height),
-    );
-    canvas.classList.add("is-active");
-  });
-  canvas.addEventListener("pointermove", (event) => {
-    if (!drawing) return;
-    const rect = canvas.getBoundingClientRect();
-    context.lineTo(
-      (event.clientX - rect.left) * (canvas.width / rect.width),
-      (event.clientY - rect.top) * (canvas.height / rect.height),
-    );
-    context.stroke();
-  });
-  canvas.addEventListener("pointerup", () => { drawing = false; });
-  canvas.addEventListener("pointercancel", () => { drawing = false; });
-}
-
-function getHandwritingData() {
-  return Object.fromEntries(handwritingFields.map(({ key, canvas }) => [
-    key,
-    getCanvasImage(canvas) ? canvas.toDataURL("image/png") : "",
-  ]));
-}
-
-function loadHandwritingData(handwriting = {}) {
-  handwritingFields.forEach(({ key, canvas }) => {
-    clearCanvas(canvas);
-    if (!handwriting[key]) return;
-    const image = new Image();
-    image.onload = () => canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
-    image.src = handwriting[key];
-    canvas.classList.add("is-active");
-  });
-}
 
 function loadEntries() {
   const rawEntries = localStorage.getItem(STORAGE_KEY);
@@ -220,15 +154,11 @@ function renderEntries() {
       </div>
       ${entry.task ? `<p class="entry-task"><strong>かだい:</strong> ${escapeHtml(entry.task)}</p>` : ""}
       ${entry.goal ? `<p class="entry-task"><strong>かだいができるようになるためにがんばること:</strong> ${escapeHtml(entry.goal)}</p>` : ""}
-      ${entry.handwriting?.task ? `<img class="handwriting-preview" src="${escapeHtml(entry.handwriting.task)}" alt="かだいのてがき">` : ""}
-      ${entry.handwriting?.goal ? `<img class="handwriting-preview" src="${escapeHtml(entry.handwriting.goal)}" alt="がんばることのてがき">` : ""}
       <div class="understanding">めざすすがた: <span aria-label="${entry.understanding}/5">${"★".repeat(entry.understanding)}${"☆".repeat(5 - entry.understanding)}</span></div>
       <div class="understanding">ひとりでのひょうか: <span aria-label="${entry.soloEvaluation || entry.evaluation || "-"}/5">${entry.soloEvaluation || entry.evaluation ? `${"★".repeat(entry.soloEvaluation || entry.evaluation)}${"☆".repeat(5 - (entry.soloEvaluation || entry.evaluation))}` : "みせってい"}</span></div>
       <div class="understanding">なかまととのひょうか: <span aria-label="${entry.peerEvaluation || entry.evaluation || "-"}/5">${entry.peerEvaluation || entry.evaluation ? `${"★".repeat(entry.peerEvaluation || entry.evaluation)}${"☆".repeat(5 - (entry.peerEvaluation || entry.evaluation))}` : "みせってい"}</span></div>
       <p class="entry-note">${escapeHtml(entry.content)}</p>
-      ${entry.handwriting?.content ? `<img class="handwriting-preview" src="${escapeHtml(entry.handwriting.content)}" alt="まなびかたのふりかえりのてがき">` : ""}
       ${(entry.reflection || entry.nextAction) ? `<p class="next-action"><strong>ほんじのふりかえり:</strong> ${escapeHtml(entry.reflection || entry.nextAction)}</p>` : ""}
-      ${entry.handwriting?.reflection ? `<img class="handwriting-preview" src="${escapeHtml(entry.handwriting.reflection)}" alt="きょうわかったことのてがき">` : ""}
       <div class="entry-actions">
         <button type="button" data-action="edit" data-date="${entry.date}">へんしゅう</button>
         <button class="danger-button" type="button" data-action="delete" data-date="${entry.date}">さくじょ</button>
@@ -387,7 +317,6 @@ function loadEntryIntoForm(entry) {
   understandingInput.value = normalizeUnderstandingValue(entry.understanding);
   contentInput.value = entry.content;
   reflectionInput.value = entry.reflection || entry.nextAction || "";
-  loadHandwritingData(entry.handwriting);
   editingLabel.textContent = `${formatDate(entry.date)}のきろくをへんしゅうちゅう`;
   updateCharCount();
   updateSaveState("へんしゅうちゅう");
@@ -407,8 +336,7 @@ form.addEventListener("submit", async (event) => {
   const evaluation = (soloEvaluation + peerEvaluation) / 2;
   const content = contentInput.value.trim();
   const reflection = reflectionInput.value.trim();
-  const handwriting = getHandwritingData();
-  if (!date || !subject || (!task && !handwriting.task) || !learningMethod || !peerLearning || !understanding
+  if (!date || !subject || !task || !learningMethod || !peerLearning || !understanding
     || !soloEvaluation || !peerEvaluation) {
     updateSaveState("にゅうりょくをかくにん");
     return;
@@ -418,7 +346,7 @@ form.addEventListener("submit", async (event) => {
   const nextEntry = {
     id: existingIndex >= 0 ? entries[existingIndex].id : createId(),
     date, subject, task, goal, learningMethod, soloEvaluation, peerLearning, peerEvaluation,
-    understanding, evaluation, content, reflection, handwriting,
+    understanding, evaluation, content, reflection,
     createdAt: existingIndex >= 0 ? entries[existingIndex].createdAt : now,
     updatedAt: now,
   };
@@ -452,7 +380,6 @@ dateInput.addEventListener("change", () => {
   understandingInput.value = "";
   contentInput.value = "";
   reflectionInput.value = "";
-  loadHandwritingData();
   editingLabel.textContent = `${formatDate(dateInput.value)}のきろくをかいています`;
   updateCharCount();
   updateSaveState("みほぞん");
@@ -464,9 +391,6 @@ form.addEventListener("input", () => {
 });
 
 clearButton.addEventListener("click", resetForm);
-document.querySelectorAll("[data-clear-canvas]").forEach((button) => {
-  button.addEventListener("click", () => clearCanvas(document.querySelector(`#${button.dataset.clearCanvas}`)));
-});
 subjectFilter.addEventListener("change", renderEntries);
 periodFilter.addEventListener("change", renderEntries);
 evaluationSubjectFilter.addEventListener("change", renderSummary);
@@ -489,6 +413,5 @@ entryList.addEventListener("click", (event) => {
 });
 
 dateInput.value = getTodayIso();
-handwritingFields.forEach(setupHandwritingField);
 updateCharCount();
 render();
