@@ -247,6 +247,17 @@ textarea {
   background: #dcecfb;
 }
 
+.handwriting-preview {
+  display: block;
+  width: 100%;
+  max-height: 120px;
+  object-fit: contain;
+  object-position: left center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fffefb;
+}
+
 input:focus,
 select:focus,
 textarea:focus {

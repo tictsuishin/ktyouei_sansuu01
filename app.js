@@ -220,15 +220,15 @@ function renderEntries() {
       </div>
       ${entry.task ? `<p class="entry-task"><strong>かだい:</strong> ${escapeHtml(entry.task)}</p>` : ""}
       ${entry.goal ? `<p class="entry-task"><strong>かだいができるようになるためにがんばること:</strong> ${escapeHtml(entry.goal)}</p>` : ""}
-      ${entry.handwriting?.task ? `<img class="handwriting-preview" src="${entry.handwriting.task}" alt="かだいのてがき">` : ""}
-      ${entry.handwriting?.goal ? `<img class="handwriting-preview" src="${entry.handwriting.goal}" alt="がんばることのてがき">` : ""}
+      ${entry.handwriting?.task ? `<img class="handwriting-preview" src="${escapeHtml(entry.handwriting.task)}" alt="かだいのてがき">` : ""}
+      ${entry.handwriting?.goal ? `<img class="handwriting-preview" src="${escapeHtml(entry.handwriting.goal)}" alt="がんばることのてがき">` : ""}
       <div class="understanding">めざすすがた: <span aria-label="${entry.understanding}/5">${"★".repeat(entry.understanding)}${"☆".repeat(5 - entry.understanding)}</span></div>
       <div class="understanding">ひとりでのひょうか: <span aria-label="${entry.soloEvaluation || entry.evaluation || "-"}/5">${entry.soloEvaluation || entry.evaluation ? `${"★".repeat(entry.soloEvaluation || entry.evaluation)}${"☆".repeat(5 - (entry.soloEvaluation || entry.evaluation))}` : "みせってい"}</span></div>
       <div class="understanding">なかまととのひょうか: <span aria-label="${entry.peerEvaluation || entry.evaluation || "-"}/5">${entry.peerEvaluation || entry.evaluation ? `${"★".repeat(entry.peerEvaluation || entry.evaluation)}${"☆".repeat(5 - (entry.peerEvaluation || entry.evaluation))}` : "みせってい"}</span></div>
       <p class="entry-note">${escapeHtml(entry.content)}</p>
-      ${entry.handwriting?.content ? `<img class="handwriting-preview" src="${entry.handwriting.content}" alt="まなびかたのふりかえりのてがき">` : ""}
+      ${entry.handwriting?.content ? `<img class="handwriting-preview" src="${escapeHtml(entry.handwriting.content)}" alt="まなびかたのふりかえりのてがき">` : ""}
       ${(entry.reflection || entry.nextAction) ? `<p class="next-action"><strong>ほんじのふりかえり:</strong> ${escapeHtml(entry.reflection || entry.nextAction)}</p>` : ""}
-      ${entry.handwriting?.reflection ? `<img class="handwriting-preview" src="${entry.handwriting.reflection}" alt="きょうわかったことのてがき">` : ""}
+      ${entry.handwriting?.reflection ? `<img class="handwriting-preview" src="${escapeHtml(entry.handwriting.reflection)}" alt="きょうわかったことのてがき">` : ""}
       <div class="entry-actions">
         <button type="button" data-action="edit" data-date="${entry.date}">へんしゅう</button>
         <button class="danger-button" type="button" data-action="delete" data-date="${entry.date}">さくじょ</button>
