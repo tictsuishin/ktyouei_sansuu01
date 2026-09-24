@@ -155,6 +155,12 @@ h2 {
   text-align: center;
 }
 
+.after-class-notice {
+  border-color: var(--blue);
+  background: #eef5fc;
+  color: #315f91;
+}
+
 input[type="date"],
 .search-box input,
 input[type="text"],
