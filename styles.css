@@ -167,6 +167,7 @@ textarea {
   background: #fffefb;
   color: var(--ink);
   outline: none;
+  ime-mode: disabled;
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
