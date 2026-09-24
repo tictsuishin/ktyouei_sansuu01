@@ -42,10 +42,20 @@
 
           <div class="before-class-notice">じゅぎょうのまえにうちましょう</div>
           <label class="field-label" for="entry-task">かだい</label>
-          <input id="entry-task" name="task" type="text" maxlength="120" placeholder="れい：ぶんすうのたしざんのしかたをかんがえる" required />
+          <input id="entry-task" name="task" type="text" maxlength="120" placeholder="れい：ぶんすうのたしざんのしかたをかんがえる" />
+          <div class="handwriting-field">
+            <span class="handwriting-label">てがきでもかけます</span>
+            <canvas class="handwriting-canvas" id="handwriting-task" width="900" height="180" aria-label="かだいのてがきにゅうりょく"></canvas>
+            <button class="handwriting-clear" type="button" data-clear-canvas="handwriting-task">てがきをけす</button>
+          </div>
 
           <label class="field-label" for="entry-goal">かだいが　できるようになるために　がんばること</label>
           <textarea id="entry-goal" name="goal" rows="2" maxlength="200" placeholder="れい：じぶんのかんがえをせつめいできるようにする"></textarea>
+          <div class="handwriting-field">
+            <span class="handwriting-label">てがきでもかけます</span>
+            <canvas class="handwriting-canvas" id="handwriting-goal" width="900" height="180" aria-label="がんばることのてがきにゅうりょく"></canvas>
+            <button class="handwriting-clear" type="button" data-clear-canvas="handwriting-goal">てがきをけす</button>
+          </div>
 
           <div class="field-grid">
             <div>
@@ -100,9 +110,19 @@
 
           <label class="field-label" for="entry-reflection">きょう、わかったこと</label>
           <textarea id="entry-reflection" name="reflection" rows="3" maxlength="240" placeholder="きょうは、～がわかった"></textarea>
+          <div class="handwriting-field">
+            <span class="handwriting-label">てがきでもかけます</span>
+            <canvas class="handwriting-canvas" id="handwriting-reflection" width="900" height="180" aria-label="きょうわかったことのてがきにゅうりょく"></canvas>
+            <button class="handwriting-clear" type="button" data-clear-canvas="handwriting-reflection">てがきをけす</button>
+          </div>
 
           <label class="field-label" for="entry-content">まなびかたのふりかえり</label>
           <textarea id="entry-content" name="content" rows="3" maxlength="500" placeholder="きょうは、〇〇さんのおかげで、～がわかった。つぎは、じぶんも・・・したい。"></textarea>
+          <div class="handwriting-field">
+            <span class="handwriting-label">てがきでもかけます</span>
+            <canvas class="handwriting-canvas" id="handwriting-content" width="900" height="180" aria-label="まなびかたのふりかえりのてがきにゅうりょく"></canvas>
+            <button class="handwriting-clear" type="button" data-clear-canvas="handwriting-content">てがきをけす</button>
+          </div>
           <div class="note-meta">
             <span id="editing-label">きょうのがくしゅうのきろくをかいています</span>
             <span><span id="char-count">0</span>/500</span>

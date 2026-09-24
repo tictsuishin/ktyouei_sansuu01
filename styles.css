@@ -204,6 +204,49 @@ textarea {
   min-height: 69px;
 }
 
+.handwriting-field {
+  display: grid;
+  gap: 7px;
+  margin-top: -5px;
+}
+
+.handwriting-label {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.handwriting-canvas {
+  display: block;
+  width: 100%;
+  height: 110px;
+  border: 1px dashed var(--blue);
+  border-radius: 8px;
+  background: #fffefb;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.handwriting-canvas.is-active {
+  border-style: solid;
+  border-color: var(--green);
+}
+
+.handwriting-clear {
+  justify-self: start;
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: #eef5fc;
+  color: #315f91;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.handwriting-clear:hover {
+  background: #dcecfb;
+}
+
 input:focus,
 select:focus,
 textarea:focus {
