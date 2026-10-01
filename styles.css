@@ -301,7 +301,7 @@ textarea:focus {
   align-items: end;
 }
 
-.draft-save-button {
+#draft-save-button {
   justify-self: start;
   border-color: #d9b84a;
   background: #fff8d6;
@@ -340,13 +340,17 @@ textarea:focus {
 }
 
 .primary-button {
-  background: var(--green);
-  color: white;
+  border-color: var(--blue);
+  background: #eef5fc;
+  color: #315f91;
   box-shadow: 0 12px 24px rgba(39, 108, 99, 0.22);
 }
 
 .primary-button:hover {
   transform: translateY(-1px);
+  border-color: var(--blue);
+  background: #eef5fc;
+  color: #315f91;
   box-shadow: 0 14px 28px rgba(39, 108, 99, 0.28);
 }
 
