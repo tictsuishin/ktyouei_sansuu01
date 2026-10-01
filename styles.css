@@ -303,6 +303,14 @@ textarea:focus {
 
 .draft-save-button {
   justify-self: start;
+  border-color: #d9b84a;
+  background: #fff8d6;
+  color: #7b5d15;
+}
+
+.ghost-button.draft-save-button:hover {
+  border-color: #c49d20;
+  background: #fff2b8;
 }
 
 .learning-grid {
