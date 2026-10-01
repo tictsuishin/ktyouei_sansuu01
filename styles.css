@@ -308,9 +308,11 @@ textarea:focus {
   color: #7b5d15;
 }
 
-.ghost-button.draft-save-button:hover {
-  border-color: #c49d20;
-  background: #fff2b8;
+.ghost-button.draft-save-button:hover,
+.ghost-button.draft-save-button:focus,
+.ghost-button.draft-save-button:active {
+  border-color: #d9b84a;
+  background: #fff8d6;
 }
 
 .learning-grid {
