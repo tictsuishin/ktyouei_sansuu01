@@ -1,4 +1,5 @@
 const STORAGE_KEY = "my-study-log.entries.v1";
+const DRAFT_STORAGE_KEY = "my-study-log.draft.v1";
 const GOOGLE_SHEETS_URL = "";
 const SUBJECTS = ["こくご", "さんすう", "せいかつか", "おんがく", "たいいく", "ずこう", "どうとく", "えいご", "そうごうてきながくしゅう"];
 const UNDERSTANDING_OPTIONS = [
@@ -22,6 +23,7 @@ const understandingInput = document.querySelector("#entry-understanding");
 const contentInput = document.querySelector("#entry-content");
 const reflectionInput = document.querySelector("#entry-reflection");
 const clearButton = document.querySelector("#clear-button");
+const draftSaveButton = document.querySelector("#draft-save-button");
 const entryList = document.querySelector("#entry-list");
 const emptyState = document.querySelector("#empty-state");
 const saveState = document.querySelector("#save-state");
@@ -63,6 +65,39 @@ function loadEntries() {
 
 function saveEntries() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+}
+
+function loadDraft() {
+  const rawDraft = localStorage.getItem(DRAFT_STORAGE_KEY);
+  if (!rawDraft) return null;
+  try {
+    const draft = JSON.parse(rawDraft);
+    return draft && typeof draft === "object" ? draft : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveDraft() {
+  const draft = {
+    date: dateInput.value,
+    subject: subjectInput.value,
+    task: keepKanaOnly(taskInput.value),
+    goal: keepKanaOnly(goalInput.value),
+    understanding: understandingInput.value,
+  };
+  localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+  updateSaveState("いちじほぞんずみ");
+}
+
+function restoreDraft(draft) {
+  dateInput.value = typeof draft.date === "string" ? draft.date : getTodayIso();
+  subjectInput.value = SUBJECTS.includes(draft.subject) ? draft.subject : "";
+  taskInput.value = typeof draft.task === "string" ? keepKanaOnly(draft.task) : "";
+  goalInput.value = typeof draft.goal === "string" ? keepKanaOnly(draft.goal) : "";
+  understandingInput.value = ["5", "1"].includes(String(draft.understanding)) ? String(draft.understanding) : "";
+  editingLabel.textContent = "いちじほぞんしたきろくをふくげんちゅう";
+  updateSaveState("いちじほぞんをふくげん");
 }
 
 async function sendEntryToGoogleSheets(entry) {
@@ -365,6 +400,7 @@ form.addEventListener("submit", async (event) => {
   if (existingIndex >= 0) entries[existingIndex] = nextEntry;
   else entries.push(nextEntry);
   saveEntries();
+  localStorage.removeItem(DRAFT_STORAGE_KEY);
   render();
   loadEntryIntoForm(nextEntry);
   try {
@@ -416,7 +452,11 @@ kanaInputs.forEach((input) => {
   });
 });
 
-clearButton.addEventListener("click", resetForm);
+clearButton.addEventListener("click", () => {
+  localStorage.removeItem(DRAFT_STORAGE_KEY);
+  resetForm();
+});
+draftSaveButton.addEventListener("click", saveDraft);
 subjectFilter.addEventListener("change", renderEntries);
 periodFilter.addEventListener("change", renderEntries);
 evaluationSubjectFilter.addEventListener("change", renderSummary);
@@ -439,5 +479,7 @@ entryList.addEventListener("click", (event) => {
 });
 
 dateInput.value = getTodayIso();
+const savedDraft = loadDraft();
+if (savedDraft) restoreDraft(savedDraft);
 updateCharCount();
 render();

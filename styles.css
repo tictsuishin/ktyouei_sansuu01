@@ -297,6 +297,14 @@ textarea:focus {
   gap: 12px;
 }
 
+.understanding-row {
+  align-items: end;
+}
+
+.draft-save-button {
+  justify-self: start;
+}
+
 .learning-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -815,6 +823,10 @@ textarea:focus {
 
   .field-grid {
     grid-template-columns: 1fr;
+  }
+
+  .understanding-row {
+    grid-template-columns: 1fr 1fr;
   }
 
   .mood-option {
