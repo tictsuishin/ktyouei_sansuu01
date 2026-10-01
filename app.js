@@ -35,16 +35,16 @@ const periodFilter = document.querySelector("#period-filter");
 const evaluationChart = document.querySelector("#evaluation-chart");
 const evaluationSubjectFilter = document.querySelector("#evaluation-subject-filter");
 const evaluationPeriodFilter = document.querySelector("#evaluation-period-filter");
-const hiraganaInputs = [taskInput, goalInput, reflectionInput, contentInput];
+const kanaInputs = [taskInput, goalInput, reflectionInput, contentInput];
 
 let entries = loadEntries();
 
-function keepHiraganaOnly(value) {
-  return value.replace(/[^\u3040-\u309f\s。、！？「」『』（）・…]/g, "");
+function keepKanaOnly(value) {
+  return value.replace(/[^\u3040-\u309f\u30a0-\u30ff\s。、！？「」『』（）…]/g, "");
 }
 
-function sanitizeHiraganaInput(input) {
-  const sanitizedValue = keepHiraganaOnly(input.value);
+function sanitizeKanaInput(input) {
+  const sanitizedValue = keepKanaOnly(input.value);
   if (input.value !== sanitizedValue) {
     input.value = sanitizedValue;
   }
@@ -320,15 +320,15 @@ function normalizeUnderstandingValue(value) {
 function loadEntryIntoForm(entry) {
   dateInput.value = entry.date;
   subjectInput.value = entry.subject;
-  taskInput.value = keepHiraganaOnly(entry.task || "");
-  goalInput.value = keepHiraganaOnly(entry.goal || "");
+  taskInput.value = keepKanaOnly(entry.task || "");
+  goalInput.value = keepKanaOnly(entry.goal || "");
   learningMethodInput.value = entry.learningMethod || "";
   soloEvaluationInput.value = entry.soloEvaluation || entry.evaluation || "";
   peerLearningInput.value = entry.peerLearning || "";
   peerEvaluationInput.value = entry.peerEvaluation || entry.evaluation || "";
   understandingInput.value = normalizeUnderstandingValue(entry.understanding);
-  contentInput.value = keepHiraganaOnly(entry.content || "");
-  reflectionInput.value = keepHiraganaOnly(entry.reflection || entry.nextAction || "");
+  contentInput.value = keepKanaOnly(entry.content || "");
+  reflectionInput.value = keepKanaOnly(entry.reflection || entry.nextAction || "");
   editingLabel.textContent = `${formatDate(entry.date)}のきろくをへんしゅうちゅう`;
   updateCharCount();
   updateSaveState("へんしゅうちゅう");
@@ -338,16 +338,16 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const date = dateInput.value;
   const subject = subjectInput.value.trim();
-  const task = keepHiraganaOnly(taskInput.value).trim();
-  const goal = keepHiraganaOnly(goalInput.value).trim();
+  const task = keepKanaOnly(taskInput.value).trim();
+  const goal = keepKanaOnly(goalInput.value).trim();
   const learningMethod = learningMethodInput.value;
   const soloEvaluation = Number(soloEvaluationInput.value);
   const peerLearning = peerLearningInput.value;
   const peerEvaluation = Number(peerEvaluationInput.value);
   const understanding = Number(understandingInput.value);
   const evaluation = (soloEvaluation + peerEvaluation) / 2;
-  const content = keepHiraganaOnly(contentInput.value).trim();
-  const reflection = keepHiraganaOnly(reflectionInput.value).trim();
+  const content = keepKanaOnly(contentInput.value).trim();
+  const reflection = keepKanaOnly(reflectionInput.value).trim();
   if (!date || !subject || !task || !learningMethod || !peerLearning || !understanding
     || !soloEvaluation || !peerEvaluation) {
     updateSaveState("にゅうりょくをかくにん");
@@ -402,16 +402,16 @@ form.addEventListener("input", () => {
   updateSaveState("へんしゅうちゅう");
 });
 
-hiraganaInputs.forEach((input) => {
+kanaInputs.forEach((input) => {
   let composing = false;
   input.addEventListener("compositionstart", () => { composing = true; });
   input.addEventListener("input", () => {
-    if (!composing) sanitizeHiraganaInput(input);
+    if (!composing) sanitizeKanaInput(input);
     updateCharCount();
   });
   input.addEventListener("compositionend", () => {
     composing = false;
-    sanitizeHiraganaInput(input);
+    sanitizeKanaInput(input);
     updateCharCount();
   });
 });
