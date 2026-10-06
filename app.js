@@ -37,20 +37,8 @@ const periodFilter = document.querySelector("#period-filter");
 const evaluationChart = document.querySelector("#evaluation-chart");
 const evaluationSubjectFilter = document.querySelector("#evaluation-subject-filter");
 const evaluationPeriodFilter = document.querySelector("#evaluation-period-filter");
-const kanaInputs = [taskInput, goalInput, reflectionInput, contentInput];
 
 let entries = loadEntries();
-
-function keepKanaOnly(value) {
-  return value.replace(/[^\u3040-\u309f\u30a0-\u30ff\s。、！？「」『』（）…]/g, "");
-}
-
-function sanitizeKanaInput(input) {
-  const sanitizedValue = keepKanaOnly(input.value);
-  if (input.value !== sanitizedValue) {
-    input.value = sanitizedValue;
-  }
-}
 
 function loadEntries() {
   const rawEntries = localStorage.getItem(STORAGE_KEY);
@@ -82,8 +70,8 @@ function saveDraft() {
   const draft = {
     date: dateInput.value,
     subject: subjectInput.value,
-    task: keepKanaOnly(taskInput.value),
-    goal: keepKanaOnly(goalInput.value),
+    task: taskInput.value,
+    goal: goalInput.value,
     understanding: understandingInput.value,
   };
   localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
@@ -93,8 +81,8 @@ function saveDraft() {
 function restoreDraft(draft) {
   dateInput.value = typeof draft.date === "string" ? draft.date : getTodayIso();
   subjectInput.value = SUBJECTS.includes(draft.subject) ? draft.subject : "";
-  taskInput.value = typeof draft.task === "string" ? keepKanaOnly(draft.task) : "";
-  goalInput.value = typeof draft.goal === "string" ? keepKanaOnly(draft.goal) : "";
+  taskInput.value = typeof draft.task === "string" ? draft.task : "";
+  goalInput.value = typeof draft.goal === "string" ? draft.goal : "";
   understandingInput.value = ["5", "1"].includes(String(draft.understanding)) ? String(draft.understanding) : "";
   editingLabel.textContent = "いちじほぞんしたきろくをふくげんちゅう";
   updateSaveState("いちじほぞんをふくげん");
@@ -355,15 +343,15 @@ function normalizeUnderstandingValue(value) {
 function loadEntryIntoForm(entry) {
   dateInput.value = entry.date;
   subjectInput.value = entry.subject;
-  taskInput.value = keepKanaOnly(entry.task || "");
-  goalInput.value = keepKanaOnly(entry.goal || "");
+  taskInput.value = entry.task || "";
+  goalInput.value = entry.goal || "";
   learningMethodInput.value = entry.learningMethod || "";
   soloEvaluationInput.value = entry.soloEvaluation || entry.evaluation || "";
   peerLearningInput.value = entry.peerLearning || "";
   peerEvaluationInput.value = entry.peerEvaluation || entry.evaluation || "";
   understandingInput.value = normalizeUnderstandingValue(entry.understanding);
-  contentInput.value = keepKanaOnly(entry.content || "");
-  reflectionInput.value = keepKanaOnly(entry.reflection || entry.nextAction || "");
+  contentInput.value = entry.content || "";
+  reflectionInput.value = entry.reflection || entry.nextAction || "";
   editingLabel.textContent = `${formatDate(entry.date)}のきろくをへんしゅうちゅう`;
   updateCharCount();
   updateSaveState("へんしゅうちゅう");
@@ -373,16 +361,16 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const date = dateInput.value;
   const subject = subjectInput.value.trim();
-  const task = keepKanaOnly(taskInput.value).trim();
-  const goal = keepKanaOnly(goalInput.value).trim();
+  const task = taskInput.value.trim();
+  const goal = goalInput.value.trim();
   const learningMethod = learningMethodInput.value;
   const soloEvaluation = Number(soloEvaluationInput.value);
   const peerLearning = peerLearningInput.value;
   const peerEvaluation = Number(peerEvaluationInput.value);
   const understanding = Number(understandingInput.value);
   const evaluation = (soloEvaluation + peerEvaluation) / 2;
-  const content = keepKanaOnly(contentInput.value).trim();
-  const reflection = keepKanaOnly(reflectionInput.value).trim();
+  const content = contentInput.value.trim();
+  const reflection = reflectionInput.value.trim();
   if (!date || !subject || !task || !learningMethod || !peerLearning || !understanding
     || !soloEvaluation || !peerEvaluation) {
     updateSaveState("にゅうりょくをかくにん");
@@ -436,20 +424,6 @@ dateInput.addEventListener("change", () => {
 form.addEventListener("input", () => {
   updateCharCount();
   updateSaveState("へんしゅうちゅう");
-});
-
-kanaInputs.forEach((input) => {
-  let composing = false;
-  input.addEventListener("compositionstart", () => { composing = true; });
-  input.addEventListener("input", () => {
-    if (!composing) sanitizeKanaInput(input);
-    updateCharCount();
-  });
-  input.addEventListener("compositionend", () => {
-    composing = false;
-    sanitizeKanaInput(input);
-    updateCharCount();
-  });
 });
 
 clearButton.addEventListener("click", () => {
